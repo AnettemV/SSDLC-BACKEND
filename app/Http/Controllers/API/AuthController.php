@@ -10,18 +10,29 @@ use App\Http\Controllers\Controller;
 
 class AuthController extends Controller
 {
-    public function login(Request $request) {
+    // Login
+    public function login(Request $request)
+    {
         $credentials = $request->only('email', 'password');
+
         if (!Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return response()->json(['message' => 'Credenciales inválidas'], 401);
         }
+
         $user = Auth::user();
         $token = $user->createToken('auth_token')->plainTextToken;
-        return response()->json(['access_token' => $token, 'token_type' => 'Bearer']);
+
+        return response()->json([
+            'user' => $user,           
+            'access_token' => $token,  
+            'token_type' => 'Bearer'
+        ]);
     }
 
-    public function logout(Request $request) {
+    // Logout
+    public function logout(Request $request)
+    {
         $request->user()->tokens()->delete();
-        return response()->json(['message' => 'Logged out']);
+        return response()->json(['message' => 'Sesión cerrada correctamente']);
     }
 }
